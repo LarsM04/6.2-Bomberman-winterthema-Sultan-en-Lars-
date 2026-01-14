@@ -1,0 +1,12 @@
+body {
+  background-color: #0b1d2a; /* winter nacht */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+canvas {
+  background-color: #bdefff; /* sneeuw */
+}
