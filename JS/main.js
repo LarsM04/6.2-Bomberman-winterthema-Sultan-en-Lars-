@@ -1,4 +1,4 @@
-import { player, drawPlayer, movePlayer } from "./player.js";
+import { player, drawPlayer, movePlayer, updatePlayer } from "./player.js";
 
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
@@ -76,10 +76,6 @@ function drawMap() {
   }
 }
 
-document.addEventListener("keydown", (e) => {
-  movePlayer(e, map, TILE);
-});
-
 async function init() {
   await loadTileImages();
   gameLoop();
@@ -88,6 +84,7 @@ async function init() {
 function gameLoop() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   drawMap();
+  updatePlayer(map, TILE, tileSize);
   drawPlayer(ctx, tileSize);
   requestAnimationFrame(gameLoop);
 }
