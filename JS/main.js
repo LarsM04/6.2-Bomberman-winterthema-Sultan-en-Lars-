@@ -17,6 +17,34 @@ const TILE = {
   BORDER: 3, // buitenrand
 };
 
+// Tile images
+const tileImages = {
+  [TILE.EMPTY]: null,
+  [TILE.WALL]: null,
+  [TILE.BLOCK]: null,
+  [TILE.BORDER]: null,
+};
+
+// Afbeeldingen inladen
+async function loadTileImages() {
+  const imageMap = {
+    [TILE.EMPTY]: "assets/tiles/snow floor.webp",
+    [TILE.WALL]: "assets/tiles/wall.jpg",
+    [TILE.BLOCK]: "assets/tiles/ice.jpg",
+    [TILE.BORDER]: "assets/tiles/buitenmuur.jpg",
+  };
+
+  for (const [tileType, imagePath] of Object.entries(imageMap)) {
+    const img = new Image();
+    await new Promise((resolve, reject) => {
+      img.onload = () => resolve();
+      img.onerror = () => reject(new Error(`Failed to load ${imagePath}`));
+      img.src = imagePath;
+    });
+    tileImages[tileType] = img;
+  }
+}
+
 const map = [
   [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
   [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
@@ -40,36 +68,10 @@ function drawMap() {
       const x = col * tileSize;
       const y = row * tileSize;
 
-      switch (tile) {
-        case TILE.BORDER:
-          ctx.fillStyle = "#cfefff"; // ijsrand
-          ctx.fillRect(x, y, tileSize, tileSize);
-          ctx.strokeStyle = "#7fbcd2";
-          ctx.strokeRect(x, y, tileSize, tileSize);
-          break;
-
-        case TILE.WALL:
-          ctx.fillStyle = "#8fa6b3"; // bevroren steen
-          ctx.fillRect(x, y, tileSize, tileSize);
-          ctx.strokeStyle = "#6d7f8a";
-          ctx.strokeRect(x, y, tileSize, tileSize);
-          break;
-
-        case TILE.BLOCK:
-          ctx.fillStyle = "#ffffff"; // sneeuwblok
-          ctx.fillRect(x, y, tileSize, tileSize);
-          ctx.strokeStyle = "#d0d0d0";
-          ctx.strokeRect(x, y, tileSize, tileSize);
-          break;
-
-        case TILE.EMPTY:
-          ctx.fillStyle = "#7fc8ff"; // ijsvloer
-          ctx.fillRect(x, y, tileSize, tileSize);
-          break;
+      // Tekenen van tile afbeelding
+      if (tileImages[tile]) {
+        ctx.drawImage(tileImages[tile], x, y, tileSize, tileSize);
       }
-
-      ctx.strokeStyle = "rgba(255,255,255,0.1)";
-      ctx.strokeRect(x, y, tileSize, tileSize);
     }
   }
 }
@@ -78,6 +80,11 @@ document.addEventListener("keydown", (e) => {
   movePlayer(e, map, TILE);
 });
 
+async function init() {
+  await loadTileImages();
+  gameLoop();
+}
+
 function gameLoop() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   drawMap();
@@ -85,4 +92,4 @@ function gameLoop() {
   requestAnimationFrame(gameLoop);
 }
 
-gameLoop();
+init();
