@@ -1,5 +1,5 @@
 body {
-  background-color: #0b1d2a; /* winter nacht */
+  background-color: #0b1d2a;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -8,5 +8,5 @@ body {
 }
 
 canvas {
-  background-color: #bdefff; /* sneeuw */
+  background-color: #bdefff;
 }

@@ -15,7 +15,7 @@ const TILE = {
   BLOCK: 2
 };
 
-// 2D grid (map)
+// Map
 const map = [
   [1,1,1,1,1,1,1,1,1,1,1,1,1],
   [1,0,0,2,0,2,0,2,0,2,0,0,1],
@@ -32,26 +32,25 @@ const map = [
   [1,1,1,1,1,1,1,1,1,1,1,1,1]
 ];
 
-function drawMap() {
-  for (let row = 0; row < rows; row++) {
-    for (let col = 0; col < cols; col++) {
-      const tile = map[row][col];
+// Enemies (uit enemy.js)
+const enemies = [
+  new Enemy(1, 1),
+  new Enemy(11, 11)
+];
 
-      switch (tile) {
-        case TILE.WALL:
-          ctx.fillStyle = "#4a6fa5"; // ijsmuur
-          break;
-        case TILE.BLOCK:
-          ctx.fillStyle = "#ffffff"; // sneeuwblok
-          break;
-        case TILE.EMPTY:
-          ctx.fillStyle = "#bdefff"; // sneeuwgrond
-          break;
-      }
+// Map tekenen
+function drawMap() {
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const tile = map[r][c];
+
+      if (tile === TILE.WALL) ctx.fillStyle = "#4a6fa5";
+      if (tile === TILE.BLOCK) ctx.fillStyle = "#ffffff";
+      if (tile === TILE.EMPTY) ctx.fillStyle = "#bdefff";
 
       ctx.fillRect(
-        col * tileSize,
-        row * tileSize,
+        c * tileSize,
+        r * tileSize,
         tileSize,
         tileSize
       );
@@ -59,9 +58,17 @@ function drawMap() {
   }
 }
 
+// Game loop
 function gameLoop() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+
   drawMap();
+
+  for (let enemy of enemies) {
+    enemy.update(map);
+    enemy.draw(ctx, tileSize);
+  }
+
   requestAnimationFrame(gameLoop);
 }
 
