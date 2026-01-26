@@ -1,4 +1,5 @@
 import { player, drawPlayer, updatePlayer } from "./player.js";
+import { drawBombs } from "./bomb.js"; // NIEUWE IMPORT
 
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
@@ -10,17 +11,15 @@ const cols = 13;
 canvas.width = cols * tileSize;
 canvas.height = rows * tileSize;
 
-const TILE = {
+export const TILE = {
   EMPTY: 0,
   WALL: 1,
   BLOCK: 2,
   BORDER: 3,
 };
 
-// Tile images
 const tileImages = {};
 
-// Load tile images
 async function loadTileImages() {
   const imageMap = {
     [TILE.EMPTY]: "assets/tiles/snow floor.webp",
@@ -77,6 +76,10 @@ async function init() {
 function gameLoop() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   drawMap();
+  
+  // Teken eerst de bommen, dan de speler
+  drawBombs(ctx, tileSize);
+  
   updatePlayer(map, TILE, tileSize);
   drawPlayer(ctx, tileSize);
   requestAnimationFrame(gameLoop);
