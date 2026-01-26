@@ -1,4 +1,4 @@
-import { player, drawPlayer, movePlayer, updatePlayer } from "./player.js";
+import { player, drawPlayer, updatePlayer } from "./player.js";
 
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
@@ -11,21 +11,16 @@ canvas.width = cols * tileSize;
 canvas.height = rows * tileSize;
 
 const TILE = {
-  EMPTY: 0, // ijsvloer
-  WALL: 1, // vaste muur
-  BLOCK: 2, // kapot blok
-  BORDER: 3, // buitenrand
+  EMPTY: 0,
+  WALL: 1,
+  BLOCK: 2,
+  BORDER: 3,
 };
 
 // Tile images
-const tileImages = {
-  [TILE.EMPTY]: null,
-  [TILE.WALL]: null,
-  [TILE.BLOCK]: null,
-  [TILE.BORDER]: null,
-};
+const tileImages = {};
 
-// Afbeeldingen inladen
+// Load tile images
 async function loadTileImages() {
   const imageMap = {
     [TILE.EMPTY]: "assets/tiles/snow floor.webp",
@@ -37,8 +32,8 @@ async function loadTileImages() {
   for (const [tileType, imagePath] of Object.entries(imageMap)) {
     const img = new Image();
     await new Promise((resolve, reject) => {
-      img.onload = () => resolve();
-      img.onerror = () => reject(new Error(`Failed to load ${imagePath}`));
+      img.onload = resolve;
+      img.onerror = reject;
       img.src = imagePath;
     });
     tileImages[tileType] = img;
@@ -46,19 +41,19 @@ async function loadTileImages() {
 }
 
 const map = [
-  [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
-  [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
-  [3, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 3],
-  [3, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 3],
-  [3, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 3],
-  [3, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 3],
-  [3, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 3],
-  [3, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 3],
-  [3, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 3],
-  [3, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 3],
-  [3, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 3],
-  [3, 0, 0, 2, 0, 2, 0, 2, 0, 2, 0, 0, 3],
-  [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+  [3,3,3,3,3,3,3,3,3,3,3,3,3],
+  [3,0,0,0,0,0,0,0,0,0,0,0,3],
+  [3,0,1,0,1,0,1,0,1,0,1,0,3],
+  [3,2,0,2,0,2,0,2,0,2,0,2,3],
+  [3,0,1,0,1,0,1,0,1,0,1,0,3],
+  [3,2,0,2,0,2,0,2,0,2,0,2,3],
+  [3,0,1,0,1,0,1,0,1,0,1,0,3],
+  [3,2,0,2,0,2,0,2,0,2,0,2,3],
+  [3,0,1,0,1,0,1,0,1,0,1,0,3],
+  [3,2,0,2,0,2,0,2,0,2,0,2,3],
+  [3,0,1,0,1,0,1,0,1,0,1,0,3],
+  [3,0,0,2,0,2,0,2,0,2,0,0,3],
+  [3,3,3,3,3,3,3,3,3,3,3,3,3],
 ];
 
 function drawMap() {
@@ -67,8 +62,6 @@ function drawMap() {
       const tile = map[row][col];
       const x = col * tileSize;
       const y = row * tileSize;
-
-      // Tekenen van tile afbeelding
       if (tileImages[tile]) {
         ctx.drawImage(tileImages[tile], x, y, tileSize, tileSize);
       }
