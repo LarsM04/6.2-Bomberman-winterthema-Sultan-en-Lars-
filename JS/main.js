@@ -1,5 +1,5 @@
-import { player, drawPlayer, updatePlayer } from "./player.js";
-import { drawBombs } from "./bomb.js"; // NIEUWE IMPORT
+import { player, drawPlayer, updatePlayer, setupInput } from "./player.js";
+import { drawBombsAndExplosions } from "./bomb.js";
 
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
@@ -27,14 +27,9 @@ async function loadTileImages() {
     [TILE.BLOCK]: "assets/tiles/ice.jpg",
     [TILE.BORDER]: "assets/tiles/buitenmuur.jpg",
   };
-
   for (const [tileType, imagePath] of Object.entries(imageMap)) {
     const img = new Image();
-    await new Promise((resolve, reject) => {
-      img.onload = resolve;
-      img.onerror = reject;
-      img.src = imagePath;
-    });
+    await new Promise((res) => { img.onload = res; img.src = imagePath; });
     tileImages[tileType] = img;
   }
 }
@@ -56,32 +51,25 @@ const map = [
 ];
 
 function drawMap() {
-  for (let row = 0; row < rows; row++) {
-    for (let col = 0; col < cols; col++) {
-      const tile = map[row][col];
-      const x = col * tileSize;
-      const y = row * tileSize;
-      if (tileImages[tile]) {
-        ctx.drawImage(tileImages[tile], x, y, tileSize, tileSize);
-      }
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      if (tileImages[map[r][c]]) ctx.drawImage(tileImages[map[r][c]], c * 40, r * 40, 40, 40);
     }
   }
 }
 
 async function init() {
   await loadTileImages();
+  setupInput(map, TILE); // Setup input met map data
   gameLoop();
 }
 
 function gameLoop() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   drawMap();
-  
-  // Teken eerst de bommen, dan de speler
-  drawBombs(ctx, tileSize);
-  
-  updatePlayer(map, TILE, tileSize);
-  drawPlayer(ctx, tileSize);
+  drawBombsAndExplosions(ctx, tileSize);
+  updatePlayer(map, TILE);
+  drawPlayer(ctx);
   requestAnimationFrame(gameLoop);
 }
 

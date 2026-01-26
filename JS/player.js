@@ -1,8 +1,8 @@
 import { placeBomb } from "./bomb.js";
 
 export const player = {
-  x: 1 * 40,
-  y: 1 * 40,
+  x: 40,
+  y: 40,
   tileSize: 40,
   margin: 8,
   speed: 2,
@@ -10,54 +10,6 @@ export const player = {
 };
 
 const keys = {};
-
-document.addEventListener("keydown", (e) => {
-  const key = e.key.toLowerCase();
-  keys[key] = true;
-
-  // Luister naar de 'x' toets om een bom te plaatsen
-  if (key === "x") {
-    placeBomb(player);
-  }
-});
-
-document.addEventListener("keyup", (e) => {
-  keys[e.key.toLowerCase()] = false;
-});
-
-export function drawPlayer(ctx) {
-  ctx.fillStyle = player.color;
-  ctx.fillRect(
-    player.x + player.margin,
-    player.y + player.margin,
-    player.tileSize - player.margin * 2,
-    player.tileSize - player.margin * 2
-  );
-}
-
-function isSolidTile(col, row, map, TILE) {
-  if (!map[row] || map[row][col] === undefined) return true;
-  return map[row][col] !== TILE.EMPTY;
-}
-
-function canMoveTo(x, y, map, TILE) {
-  const left = x;
-  const right = x + player.tileSize - 1;
-  const top = y;
-  const bottom = y + player.tileSize - 1;
-
-  const leftTile = Math.floor(left / player.tileSize);
-  const rightTile = Math.floor(right / player.tileSize);
-  const topTile = Math.floor(top / player.tileSize);
-  const bottomTile = Math.floor(bottom / player.tileSize);
-
-  return !(
-    isSolidTile(leftTile, topTile, map, TILE) ||
-    isSolidTile(rightTile, topTile, map, TILE) ||
-    isSolidTile(leftTile, bottomTile, map, TILE) ||
-    isSolidTile(rightTile, bottomTile, map, TILE)
-  );
-}
 
 export function updatePlayer(map, TILE) {
   let dx = 0;
@@ -82,4 +34,31 @@ export function updatePlayer(map, TILE) {
   const maxY = (map.length - 2) * player.tileSize;
   player.x = Math.max(min, Math.min(player.x, maxX));
   player.y = Math.max(min, Math.min(player.y, maxY));
+}
+
+function canMoveTo(x, y, map, TILE) {
+  const left = x, right = x + player.tileSize - 1;
+  const top = y, bottom = y + player.tileSize - 1;
+  const lT = Math.floor(left / 40), rT = Math.floor(right / 40);
+  const tT = Math.floor(top / 40), bT = Math.floor(bottom / 40);
+
+  const isSolid = (c, r) => !map[r] || map[r][c] !== TILE.EMPTY;
+
+  return !(isSolid(lT, tT) || isSolid(rT, tT) || isSolid(lT, bT) || isSolid(rT, bT));
+}
+
+export function drawPlayer(ctx) {
+  ctx.fillStyle = player.color;
+  ctx.fillRect(player.x + player.margin, player.y + player.margin, player.tileSize - player.margin * 2, player.tileSize - player.margin * 2);
+}
+
+export function setupInput(map, TILE) {
+  document.addEventListener("keydown", (e) => {
+    const key = e.key.toLowerCase();
+    keys[key] = true;
+    if (key === "x") placeBomb(player, map, TILE);
+  });
+  document.addEventListener("keyup", (e) => {
+    keys[e.key.toLowerCase()] = false;
+  });
 }
