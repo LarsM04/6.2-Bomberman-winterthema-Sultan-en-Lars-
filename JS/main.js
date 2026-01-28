@@ -1,5 +1,5 @@
-import { drawPlayer, updatePlayer } from "./player.js";
-import { enemies, drawEnemies, updateEnemies } from "./enemy.js";
+import { drawPlayer, updatePlayer, player } from "./player.js";
+import { drawEnemies, updateEnemies } from "./enemy.js";
 
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
@@ -38,7 +38,6 @@ async function loadTileImages() {
   }
 }
 
-
 export const map = [
   [3,3,3,3,3,3,3,3,3,3,3,3,3],
   [3,0,0,0,0,0,0,0,0,0,0,0,3],
@@ -55,7 +54,6 @@ export const map = [
   [3,3,3,3,3,3,3,3,3,3,3,3,3],
 ];
 
-
 function drawMap() {
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
@@ -71,20 +69,18 @@ function drawMap() {
   }
 }
 
-
 function gameLoop() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   drawMap();
   updatePlayer(map, TILE);
-  updateEnemies(map, TILE);
+  updateEnemies(map, TILE, player);
 
   drawPlayer(ctx);
   drawEnemies(ctx);
 
   requestAnimationFrame(gameLoop);
 }
-
 
 async function init() {
   await loadTileImages();

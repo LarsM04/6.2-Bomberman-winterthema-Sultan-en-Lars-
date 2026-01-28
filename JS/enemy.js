@@ -1,122 +1,112 @@
+const TILE_SIZE = 40;
+
+class Enemy {
+  constructor(col, row, speed, color) {
+    this.x = col * TILE_SIZE;
+    this.y = row * TILE_SIZE;
+    this.size = TILE_SIZE;
+    this.speed = speed;
+    this.dx = 1;
+    this.dy = 0;
+    this.color = color;
+    this.alive = true;
+  }
+}
 
 
+// ENEMIES
+// ===============================
 export const enemies = [
-  createEnemy(11, 1, "basic"),
-  createEnemy(1, 11, "fast"),
-  createEnemy(11, 11, "slow"),
+  new Enemy(11, 1, 1, "#6a18cf"),
+  new Enemy(1, 11, 2, "#e74c3c"),
+  new Enemy(11, 11, 0.5, "#ded419"),
 ];
 
 
-function createEnemy(col, row, type = "basic") {
-  const types = {
-    basic: { speed: 1, color: "#2ecc71" },
-    fast:  { speed: 2, color: "#e74c3c" },
-    slow:  { speed: 0.5, color: "#3498db" },
-  };
-
-  const t = types[type];
-
-  return {
-    x: col * 40,
-    y: row * 40,
-    tileSize: 40,
-
-    speed: t.speed,
-    dirX: randomDir().x,
-    dirY: randomDir().y,
-
-    color: t.color,
-    type,
-
-   
-    waitTime: 0,
-    animOffset: Math.random() * Math.PI * 2,
-    alive: true,
-  };
-}
-
-
-
 export function drawEnemies(ctx) {
-  enemies.forEach(e => {
-    if (!e.alive) return;
-
-    const wobble = Math.sin(e.animOffset) * 2;
+  for (let i = 0; i < enemies.length; i++) {
+    const e = enemies[i];
+    if (!e.alive) continue;
 
     ctx.fillStyle = e.color;
     ctx.fillRect(
-      e.x + 8 + wobble,
+      e.x + 8,
       e.y + 8,
-      e.tileSize - 16,
-      e.tileSize - 16
+      e.size - 16,
+      e.size - 16
     );
-  });
+  }
 }
 
 
+export function updateEnemies(map, TILE, player) {
+  for (let i = 0; i < enemies.length; i++) {
+    const e = enemies[i];
+    if (!e.alive || !player.alive) continue;
 
-function isSolid(col, row, map, TILE) {
-  if (!map[row] || map[row][col] === undefined) return true;
-  return map[row][col] !== TILE.EMPTY;
-}
+    // collision met speler (ternary)
+    player.alive = hit(e, player) ? false : player.alive;
 
-function canMove(enemy, x, y, map, TILE) {
-  const s = enemy.tileSize - 1;
+    const nx = e.x + e.dx * e.speed;
+    const ny = e.y + e.dy * e.speed;
 
-  const points = [
-    [x, y],
-    [x + s, y],
-    [x, y + s],
-    [x + s, y + s],
-  ];
-
-  return points.every(([px, py]) => {
-    const c = Math.floor(px / enemy.tileSize);
-    const r = Math.floor(py / enemy.tileSize);
-    return !isSolid(c, r, map, TILE);
-  });
-}
-
-
-
-export function updateEnemies(map, TILE) {
-  enemies.forEach(e => {
-    if (!e.alive) return;
-
-  
-    e.animOffset += 0.1;
-
-  
-    if (e.waitTime > 0) {
-      e.waitTime--;
-      return;
-    }
-
-    const nx = e.x + e.dirX * e.speed;
-    const ny = e.y + e.dirY * e.speed;
-
-    if (canMove(e, nx, ny, map, TILE)) {
+    if (free(nx, ny, e.size, map, TILE)) {
       e.x = nx;
       e.y = ny;
     } else {
-
-      const d = randomDir();
-      e.dirX = d.x;
-      e.dirY = d.y;
-      e.waitTime = 10;
+      // while-loop → nieuwe richting zoeken
+      let tries = 0;
+      while (tries < 4) {
+        const d = randomDir();
+        e.dx = d.dx;
+        e.dy = d.dy;
+        tries++;
+        break;
+      }
     }
-  });
+  }
 }
 
 
+function free(x, y, size, map, TILE) {
+  const points = [
+    [x, y],
+    [x + size - 1, y],
+    [x, y + size - 1],
+    [x + size - 1, y + size - 1],
+  ];
+
+  return points.every(p => {
+    const c = Math.floor(p[0] / size);
+    const r = Math.floor(p[1] / size);
+    return map[r] && map[r][c] === TILE.EMPTY;
+  });
+}
+
+function hit(a, b) {
+  return (
+    a.x < b.x + b.tileSize &&
+    a.x + a.size > b.x &&
+    a.y < b.y + b.tileSize &&
+    a.y + a.size > b.y
+  );
+}
 
 function randomDir() {
   const dirs = [
-    { x: 1, y: 0 },
-    { x: -1, y: 0 },
-    { x: 0, y: 1 },
-    { x: 0, y: -1 },
+    { dx: 1, dy: 0 },
+    { dx: -1, dy: 0 },
+    { dx: 0, dy: 1 },
+    { dx: 0, dy: -1 },
   ];
   return dirs[Math.floor(Math.random() * dirs.length)];
 }
 
+
+setInterval(() => {
+  enemies.forEach(e => {
+    const d = randomDir();
+    e.dx = d.dx;
+    e.dy = d.dy;
+  });
+}, 2000);
