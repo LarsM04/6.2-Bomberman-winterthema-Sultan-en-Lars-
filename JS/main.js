@@ -23,8 +23,9 @@ const restartBtn = document.getElementById("restartBtn");
 const menuOverlay = document.getElementById("menuOverlay");
 
 const tileSize = 40;
-const rows = 13;
-const cols = 13;
+
+const rows = 17;
+const cols = 17;
 
 canvas.width = cols * tileSize;
 canvas.height = rows * tileSize;
@@ -43,8 +44,8 @@ let gameStarted = false;
 const snowflakesBack = [];
 const snowflakesFront = [];
 
-const SNOW_BACK_COUNT = 90;
-const SNOW_FRONT_COUNT = 70;
+const SNOW_BACK_COUNT = 120;
+const SNOW_FRONT_COUNT = 100;
 
 let score = 0;
 function addScore(points) {
@@ -158,25 +159,71 @@ async function loadTileImages() {
   }
 }
 
-const originalMap = [
-  [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
-  [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
-  [3, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 3],
-  [3, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 3],
-  [3, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 3],
-  [3, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 3],
-  [3, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 3],
-  [3, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 3],
-  [3, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 3],
-  [3, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 3],
-  [3, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 3],
-  [3, 0, 0, 2, 0, 2, 0, 2, 0, 2, 0, 0, 3],
-  [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
-];
+function createBaseMap() {
+  const m = Array.from({ length: rows }, () => Array(cols).fill(TILE.EMPTY));
 
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      if (r === 0 || c === 0 || r === rows - 1 || c === cols - 1) {
+        m[r][c] = TILE.BORDER;
+        continue;
+      }
+
+      if (r % 2 === 0 && c % 2 === 0) {
+        m[r][c] = TILE.WALL;
+      }
+    }
+  }
+
+  return m;
+}
+
+function clearSpawn(m, spawnCol, spawnRow) {
+  const safe = [
+    [spawnCol, spawnRow],
+    [spawnCol + 1, spawnRow],
+    [spawnCol, spawnRow + 1],
+    [spawnCol + 2, spawnRow],
+    [spawnCol, spawnRow + 2],
+  ];
+
+  safe.forEach(([c, r]) => {
+    if (m[r] && m[r][c] !== undefined && m[r][c] !== TILE.BORDER) {
+      m[r][c] = TILE.EMPTY;
+    }
+  });
+}
+
+function addRandomBlocks(m) {
+  const blockChance = 0.33;
+
+  for (let r = 1; r < rows - 1; r++) {
+    for (let c = 1; c < cols - 1; c++) {
+      if (m[r][c] !== TILE.EMPTY) continue;
+
+      if (Math.random() < blockChance) {
+        m[r][c] = TILE.BLOCK;
+      }
+    }
+  }
+
+  clearSpawn(m, 1, 1);
+  clearSpawn(m, cols - 2, 1);
+  clearSpawn(m, 1, rows - 2);
+  clearSpawn(m, cols - 2, rows - 2);
+}
+
+function generateMap() {
+  const m = createBaseMap();
+  addRandomBlocks(m);
+  return m;
+}
+
+let originalMap = generateMap();
 export const map = structuredClone(originalMap);
 
 function resetMap() {
+  originalMap = generateMap();
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
       map[r][c] = originalMap[r][c];
@@ -185,8 +232,8 @@ function resetMap() {
 }
 
 function resetGame() {
-  player.x = 40;
-  player.y = 40;
+  player.x = tileSize * 1;
+  player.y = tileSize * 1;
   player.alive = true;
 
   score = 0;
@@ -198,9 +245,15 @@ function resetGame() {
   particles.length = 0;
 
   const enemyStart = [
-    { col: 11, row: 1, speed: 1, color: "#6a18cf", scoreValue: 100 },
-    { col: 1, row: 11, speed: 2, color: "#e74c3c", scoreValue: 150 },
-    { col: 11, row: 11, speed: 0.5, color: "#ded419", scoreValue: 200 },
+    { col: cols - 2, row: 1, speed: 1, color: "#6a18cf", scoreValue: 100 },
+    { col: 1, row: rows - 2, speed: 2, color: "#e74c3c", scoreValue: 150 },
+    {
+      col: cols - 2,
+      row: rows - 2,
+      speed: 0.6,
+      color: "#ded419",
+      scoreValue: 200,
+    },
   ];
 
   for (let i = 0; i < enemies.length; i++) {

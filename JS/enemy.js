@@ -15,9 +15,9 @@ class Enemy {
 }
 
 export const enemies = [
-  new Enemy(11, 1, 1, "#6a18cf", 100),
-  new Enemy(1, 11, 2, "#e74c3c", 150),
-  new Enemy(11, 11, 0.5, "#ded419", 200),
+  new Enemy(11, 1, 0.6, "#6a18cf", 100),
+  new Enemy(1, 11, 0.7, "#e74c3c", 150),
+  new Enemy(11, 11, 0.4, "#ded419", 200),
 ];
 
 export function drawEnemies(ctx) {
@@ -110,4 +110,4 @@ setInterval(() => {
     e.dx = d.dx;
     e.dy = d.dy;
   });
-}, 2000);
+}, 3500);
