@@ -1,6 +1,5 @@
 export const bombs = [];
 export const explosions = [];
-
 export const particles = [];
 
 function spawnExplosionParticles(col, row, tileSize) {
@@ -69,6 +68,7 @@ export function placeBomb(player, map, TILE) {
     row,
     timer: 2000,
     range: 2,
+    spawnTime: Date.now(),
   };
 
   bombs.push(newBomb);
@@ -132,17 +132,26 @@ export function playerHitByExplosion(player, tileSize) {
 }
 
 export function drawBombsAndExplosions(ctx, tileSize) {
-  ctx.fillStyle = "black";
+  const now = Date.now();
+
   bombs.forEach((bomb) => {
+    const cx = bomb.col * tileSize + tileSize / 2;
+    const cy = bomb.row * tileSize + tileSize / 2;
+
+    ctx.fillStyle = "black";
     ctx.beginPath();
-    ctx.arc(
-      bomb.col * tileSize + tileSize / 2,
-      bomb.row * tileSize + tileSize / 2,
-      tileSize / 3,
-      0,
-      Math.PI * 2,
-    );
+    ctx.arc(cx, cy, tileSize / 3, 0, Math.PI * 2);
     ctx.fill();
+
+    const elapsed = now - bomb.spawnTime;
+    const progress = Math.min(elapsed / bomb.timer, 1);
+    const radius = (tileSize / 2.4) * (1 - progress);
+
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.8)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+    ctx.stroke();
   });
 
   explosions.forEach((expo) => {
