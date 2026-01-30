@@ -1,12 +1,53 @@
 body {
-  background-color: #0b1d2a; /* winter nacht */
+  background: radial-gradient(circle at top, #0f3550, #07121a 70%);
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
   margin: 0;
+  overflow: hidden;
+  font-family: "Trebuchet MS", Arial, sans-serif;
+}
+
+#winter-ui {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+#title {
+  font-size: 56px;
+  font-weight: 900;
+  letter-spacing: 6px;
+  color: #eaf8ff;
+  text-shadow:
+    0 0 12px rgba(180, 240, 255, 0.7),
+    0 0 25px rgba(100, 200, 255, 0.35);
+  user-select: none;
+}
+
+#subtitle {
+  margin-top: -10px;
+  font-size: 16px;
+  letter-spacing: 3px;
+  color: rgba(255, 255, 255, 0.75);
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.25);
+  user-select: none;
+}
+
+#game-wrap {
+  padding: 14px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow:
+    0 0 40px rgba(0, 0, 0, 0.35),
+    inset 0 0 25px rgba(180, 240, 255, 0.08);
+  backdrop-filter: blur(6px);
 }
 
 canvas {
-  background-color: #bdefff; /* sneeuw */
+  display: block;
+  border-radius: 10px;
+  background-color: transparent;
 }
