@@ -1,139 +1,130 @@
+
 body {
-  background: radial-gradient(circle at top, #0f3550, #07121a 70%);
+  background-color: #050505;
+  background-image: 
+    linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+    linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  background-size: 100% 4px, 3px 100%;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
   margin: 0;
-  overflow: hidden;
-  font-family: "Trebuchet MS", Arial, sans-serif;
+  color: #fff;
+  font-family: 'Courier New', Courier, monospace;
 }
 
-#winter-ui {
+#retro-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 14px;
 }
 
 #title {
-  font-size: 56px;
-  font-weight: 900;
-  letter-spacing: 6px;
-  color: #eaf8ff;
-  text-shadow:
-    0 0 12px rgba(180, 240, 255, 0.7),
-    0 0 25px rgba(100, 200, 255, 0.35);
-  user-select: none;
+  font-size: 60px;
+  margin: 0;
+  color: #fff;
+  text-align: center;
+  text-shadow: 6px 6px 0px #005f73, 10px 10px 0px #001219;
+  letter-spacing: -2px;
 }
 
 #subtitle {
-  margin-top: -10px;
-  font-size: 16px;
-  letter-spacing: 3px;
-  color: rgba(255, 255, 255, 0.75);
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.25);
-  user-select: none;
+  background: #00d4ff;
+  color: #000;
+  padding: 4px 15px;
+  font-weight: bold;
+  font-size: 20px;
+  margin-bottom: 20px;
+  box-shadow: 4px 4px 0px #fff;
 }
 
-#game-wrap {
-  position: relative;
-  padding: 14px;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.06);
-  box-shadow:
-    0 0 40px rgba(0, 0, 0, 0.35),
-    inset 0 0 25px rgba(180, 240, 255, 0.08);
-  backdrop-filter: blur(6px);
+
+.pixel-frame {
+  padding: 10px;
+  background: #222;
+  border: 8px solid #fff;
+  outline: 8px solid #00d4ff;
+  box-shadow: 20px 20px 0px rgba(0,0,0,0.5);
 }
 
 canvas {
   display: block;
-  border-radius: 10px;
-  background-color: transparent;
+  image-rendering: pixelated; 
+  background-color: #000;
 }
 
+/* De Overlay */
 .overlay {
   position: absolute;
-  inset: 14px;
-  border-radius: 12px;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
   display: flex;
   justify-content: center;
   align-items: center;
-  background: rgba(5, 20, 30, 0.55);
-  backdrop-filter: blur(6px);
-  z-index: 5;
+  z-index: 100;
 }
 
-.overlay.hidden {
-  display: none;
-}
+.overlay.hidden { display: none; }
 
 .overlay-card {
-  width: min(360px, 90%);
-  padding: 22px 20px;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow:
-    0 0 45px rgba(0, 0, 0, 0.45),
-    inset 0 0 22px rgba(180, 240, 255, 0.08);
+  border: 6px solid #fff;
+  background: #003d5b;
+  padding: 30px;
   text-align: center;
+  image-rendering: pixelated;
 }
 
 .overlay-title {
-  font-size: 34px;
-  font-weight: 900;
-  letter-spacing: 4px;
-  color: #eaf8ff;
-  text-shadow: 0 0 16px rgba(180, 240, 255, 0.55);
+  font-size: 32px;
+  color: #fff;
+  margin-bottom: 20px;
+  animation: blink 0.8s steps(2) infinite; 
 }
 
-.overlay-subtitle {
-  margin-top: 6px;
-  font-size: 13px;
-  letter-spacing: 3px;
-  color: rgba(255, 255, 255, 0.8);
+@keyframes blink {
+  to { visibility: hidden; }
 }
 
-.overlay-controls {
-  margin-top: 18px;
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  flex-wrap: wrap;
-}
 
-.overlay-controls button {
-  padding: 10px 18px;
-  border: none;
-  border-radius: 12px;
-  font-size: 15px;
-  font-weight: 800;
-  letter-spacing: 1px;
+button {
+  display: block;
+  width: 100%;
+  margin: 10px 0;
+  padding: 12px;
+  border: 4px solid #fff;
+  background: #000;
+  color: #fff;
+  font-family: inherit;
+  font-size: 18px;
+  font-weight: bold;
   cursor: pointer;
-  color: #06202d;
-  background: rgba(220, 250, 255, 0.92);
-  box-shadow: 0 0 18px rgba(120, 220, 255, 0.35);
-  transition: transform 0.12s ease;
+  position: relative;
 }
 
-.overlay-controls button:hover {
-  transform: scale(1.04);
+button:hover {
+  background: #00d4ff;
+  color: #000;
 }
 
-.overlay-controls button:active {
-  transform: scale(0.98);
+button:active {
+  top: 4px;
+  left: 4px;
 }
 
-.overlay-controls button.secondary {
-  background: rgba(255, 255, 255, 0.22);
-  color: rgba(255, 255, 255, 0.92);
-  box-shadow: none;
+button.secondary {
+  border-color: #ff00ff;
+  color: #ff00ff;
+}
+
+button.secondary:hover {
+  background: #ff00ff;
+  color: #fff;
 }
 
 .overlay-hint {
-  margin-top: 18px;
-  font-size: 12px;
-  line-height: 1.6;
-  color: rgba(255, 255, 255, 0.8);
+  margin-top: 20px;
+  font-size: 14px;
+  color: #00d4ff;
+  line-height: 1.5;
 }

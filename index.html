@@ -1,39 +1,35 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="nl">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Bomberman Winter</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <div id="winter-ui">
-      <div id="title">BOMBERMAN</div>
-      <div id="subtitle">Winter Edition</div>
-
-      <div id="game-wrap">
-        <canvas id="game"></canvas>
-
-        <div id="menuOverlay" class="overlay">
-          <div class="overlay-card">
-            <div class="overlay-title">BOMBERMAN</div>
-            <div class="overlay-subtitle">Winter Edition</div>
-
-            <div class="overlay-controls">
-              <button id="startBtn">Start Game</button>
-              <button id="restartBtn" class="secondary">Restart</button>
-            </div>
-
-            <div class="overlay-hint">
-              <div><b>Move:</b> WASD / Arrow keys</div>
-              <div><b>Bomb:</b> X</div>
-              <div><b>Start:</b> Enter</div>
-              <div><b>Restart:</b> R</div>
-            </div>
-          </div>
+<head>
+    <meta charset="UTF-8">
+    <title>BOMBERMAN RETRO WINTER</title>
+    <link rel="stylesheet" href="style.css">
+    <script type="module" src="./JS/main.js" defer></script>
+</head>
+<body>
+    <div id="retro-container">
+        <div id="header">
+            <h1 id="title">BOMBERMAN</h1>
+            <div id="subtitle">WINTER EDITION</div>
         </div>
-      </div>
-    </div>
 
-    <script type="module" src="/JS/main.js"></script>
-  </body>
+        <div id="game-wrap" class="pixel-frame">
+            <canvas id="game"></canvas>
+            
+            <div id="menuOverlay" class="overlay">
+                <div class="overlay-card">
+                    <h2 class="overlay-title">PUSH START</h2>
+                    <div class="overlay-controls">
+                        <button id="startBtn">START</button>
+                        <button id="restartBtn" class="secondary">RETRY</button>
+                    </div>
+                    <div class="overlay-hint">
+                        <p>ARROWS TO MOVE</p>
+                        <p>[X] TO BOMB</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
 </html>
