@@ -12,7 +12,7 @@ export const player = {
   bombCooldown: 600,
   lastBombTime: 0,
 
-  centerForce: 0.35,
+  centerForce: 0.2,
 };
 
 const keys = {};
