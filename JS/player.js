@@ -6,7 +6,7 @@ export const player = {
   tileSize: 40,
   margin: 8,
   speed: 2,
-  color: "#ff3b3b",
+  color: "#00ec96",
   alive: true,
 };
 
