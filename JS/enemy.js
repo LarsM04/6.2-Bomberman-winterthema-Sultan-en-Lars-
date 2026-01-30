@@ -1,7 +1,7 @@
 const TILE_SIZE = 40;
 
 class Enemy {
-  constructor(col, row, speed, color) {
+  constructor(col, row, speed, color, scoreValue = 100) {
     this.x = col * TILE_SIZE;
     this.y = row * TILE_SIZE;
     this.size = TILE_SIZE;
@@ -10,13 +10,14 @@ class Enemy {
     this.dy = 0;
     this.color = color;
     this.alive = true;
+    this.scoreValue = scoreValue;
   }
 }
 
 export const enemies = [
-  new Enemy(11, 1, 1, "#6a18cf"),
-  new Enemy(1, 11, 2, "#e74c3c"),
-  new Enemy(11, 11, 0.5, "#ded419"),
+  new Enemy(11, 1, 1, "#6a18cf", 100),
+  new Enemy(1, 11, 2, "#e74c3c", 150),
+  new Enemy(11, 11, 0.5, "#ded419", 200),
 ];
 
 export function drawEnemies(ctx) {
@@ -46,6 +47,25 @@ export function updateEnemies(map, TILE, player) {
       const d = randomDir();
       e.dx = d.dx;
       e.dy = d.dy;
+    }
+  }
+}
+
+export function killEnemiesInExplosion(explosions, tileSize, addScore) {
+  for (let i = 0; i < enemies.length; i++) {
+    const e = enemies[i];
+    if (!e.alive) continue;
+
+    const enemyCol = Math.floor((e.x + e.size / 2) / tileSize);
+    const enemyRow = Math.floor((e.y + e.size / 2) / tileSize);
+
+    for (let j = 0; j < explosions.length; j++) {
+      const ex = explosions[j];
+      if (ex.col === enemyCol && ex.row === enemyRow) {
+        e.alive = false;
+        if (addScore) addScore(e.scoreValue);
+        break;
+      }
     }
   }
 }

@@ -37,6 +37,7 @@ body {
 }
 
 #game-wrap {
+  position: relative;
   padding: 14px;
   border-radius: 18px;
   background: rgba(255, 255, 255, 0.06);
@@ -50,4 +51,89 @@ canvas {
   display: block;
   border-radius: 10px;
   background-color: transparent;
+}
+
+.overlay {
+  position: absolute;
+  inset: 14px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(5, 20, 30, 0.55);
+  backdrop-filter: blur(6px);
+  z-index: 5;
+}
+
+.overlay.hidden {
+  display: none;
+}
+
+.overlay-card {
+  width: min(360px, 90%);
+  padding: 22px 20px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 0 45px rgba(0, 0, 0, 0.45),
+    inset 0 0 22px rgba(180, 240, 255, 0.08);
+  text-align: center;
+}
+
+.overlay-title {
+  font-size: 34px;
+  font-weight: 900;
+  letter-spacing: 4px;
+  color: #eaf8ff;
+  text-shadow: 0 0 16px rgba(180, 240, 255, 0.55);
+}
+
+.overlay-subtitle {
+  margin-top: 6px;
+  font-size: 13px;
+  letter-spacing: 3px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.overlay-controls {
+  margin-top: 18px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.overlay-controls button {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  cursor: pointer;
+  color: #06202d;
+  background: rgba(220, 250, 255, 0.92);
+  box-shadow: 0 0 18px rgba(120, 220, 255, 0.35);
+  transition: transform 0.12s ease;
+}
+
+.overlay-controls button:hover {
+  transform: scale(1.04);
+}
+
+.overlay-controls button:active {
+  transform: scale(0.98);
+}
+
+.overlay-controls button.secondary {
+  background: rgba(255, 255, 255, 0.22);
+  color: rgba(255, 255, 255, 0.92);
+  box-shadow: none;
+}
+
+.overlay-hint {
+  margin-top: 18px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.8);
 }

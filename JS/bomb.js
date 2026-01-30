@@ -120,6 +120,17 @@ function explode(bomb, map, TILE, tileSize) {
   });
 }
 
+export function playerHitByExplosion(player, tileSize) {
+  const pCol = Math.floor((player.x + tileSize / 2) / tileSize);
+  const pRow = Math.floor((player.y + tileSize / 2) / tileSize);
+
+  for (let i = 0; i < explosions.length; i++) {
+    const ex = explosions[i];
+    if (ex.col === pCol && ex.row === pRow) return true;
+  }
+  return false;
+}
+
 export function drawBombsAndExplosions(ctx, tileSize) {
   ctx.fillStyle = "black";
   bombs.forEach((bomb) => {

@@ -3,11 +3,24 @@ import {
   drawBombsAndExplosions,
   updateParticles,
   drawParticles,
+  explosions,
+  playerHitByExplosion,
+  bombs,
+  particles,
 } from "./bomb.js";
-import { drawEnemies, updateEnemies } from "./enemy.js";
+import {
+  drawEnemies,
+  updateEnemies,
+  killEnemiesInExplosion,
+  enemies,
+} from "./enemy.js";
 
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
+
+const startBtn = document.getElementById("startBtn");
+const restartBtn = document.getElementById("restartBtn");
+const menuOverlay = document.getElementById("menuOverlay");
 
 const tileSize = 40;
 const rows = 13;
@@ -25,11 +38,34 @@ export const TILE = {
 
 const tileImages = {};
 
+let gameStarted = false;
+
 const snowflakesBack = [];
 const snowflakesFront = [];
 
 const SNOW_BACK_COUNT = 90;
 const SNOW_FRONT_COUNT = 70;
+
+let score = 0;
+function addScore(points) {
+  score += points;
+}
+
+function drawScore() {
+  ctx.font = "18px Trebuchet MS";
+  ctx.fillStyle = "rgba(255,255,255,0.9)";
+  ctx.fillText(`Score: ${score}`, 12, 24);
+}
+
+function showMenu() {
+  menuOverlay.classList.remove("hidden");
+  gameStarted = false;
+}
+
+function hideMenu() {
+  menuOverlay.classList.add("hidden");
+  gameStarted = true;
+}
 
 function makeSnowflake(randomY = false, front = false) {
   const base = front
@@ -66,12 +102,10 @@ function initSnow() {
   snowflakesBack.length = 0;
   snowflakesFront.length = 0;
 
-  for (let i = 0; i < SNOW_BACK_COUNT; i++) {
+  for (let i = 0; i < SNOW_BACK_COUNT; i++)
     snowflakesBack.push(makeSnowflake(true, false));
-  }
-  for (let i = 0; i < SNOW_FRONT_COUNT; i++) {
+  for (let i = 0; i < SNOW_FRONT_COUNT; i++)
     snowflakesFront.push(makeSnowflake(true, true));
-  }
 }
 
 function updateSnowLayer(layer, front = false) {
@@ -124,7 +158,7 @@ async function loadTileImages() {
   }
 }
 
-export const map = [
+const originalMap = [
   [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
   [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
   [3, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 3],
@@ -139,6 +173,74 @@ export const map = [
   [3, 0, 0, 2, 0, 2, 0, 2, 0, 2, 0, 0, 3],
   [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
 ];
+
+export const map = structuredClone(originalMap);
+
+function resetMap() {
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      map[r][c] = originalMap[r][c];
+    }
+  }
+}
+
+function resetGame() {
+  player.x = 40;
+  player.y = 40;
+  player.alive = true;
+
+  score = 0;
+
+  resetMap();
+
+  bombs.length = 0;
+  explosions.length = 0;
+  particles.length = 0;
+
+  const enemyStart = [
+    { col: 11, row: 1, speed: 1, color: "#6a18cf", scoreValue: 100 },
+    { col: 1, row: 11, speed: 2, color: "#e74c3c", scoreValue: 150 },
+    { col: 11, row: 11, speed: 0.5, color: "#ded419", scoreValue: 200 },
+  ];
+
+  for (let i = 0; i < enemies.length; i++) {
+    const s = enemyStart[i];
+    const e = enemies[i];
+
+    e.x = s.col * tileSize;
+    e.y = s.row * tileSize;
+    e.speed = s.speed;
+    e.color = s.color;
+    e.scoreValue = s.scoreValue;
+    e.alive = true;
+    e.dx = 1;
+    e.dy = 0;
+  }
+}
+
+function startGame() {
+  resetGame();
+  hideMenu();
+}
+
+startBtn.addEventListener("click", startGame);
+restartBtn.addEventListener("click", () => {
+  resetGame();
+  hideMenu();
+});
+
+document.addEventListener("keydown", (e) => {
+  const key = e.key.toLowerCase();
+
+  if (key === "enter" && !gameStarted) {
+    startGame();
+  }
+
+  if (key === "r") {
+    resetGame();
+    hideMenu();
+  }
+});
 
 function drawMap() {
   for (let r = 0; r < rows; r++) {
@@ -182,8 +284,17 @@ function gameLoop() {
 
   drawMap();
 
-  updatePlayer(map, TILE);
-  updateEnemies(map, TILE, player);
+  if (gameStarted) {
+    updatePlayer(map, TILE);
+    updateEnemies(map, TILE, player);
+
+    killEnemiesInExplosion(explosions, tileSize, addScore);
+
+    if (player.alive && playerHitByExplosion(player, tileSize)) {
+      player.alive = false;
+      showMenu();
+    }
+  }
 
   drawBombsAndExplosions(ctx, tileSize);
   drawEnemies(ctx);
@@ -196,6 +307,7 @@ function gameLoop() {
   drawSnowLayer(snowflakesFront);
 
   drawFrostOverlay();
+  drawScore();
 
   requestAnimationFrame(gameLoop);
 }
@@ -204,6 +316,7 @@ async function init() {
   await loadTileImages();
   initSnow();
   setupInput(map, TILE);
+  showMenu();
   gameLoop();
 }
 
